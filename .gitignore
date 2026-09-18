@@ -1,0 +1,9 @@
+target/
+.DS_Store
+.vscode/
+.idea/
+*.iml
+*.log
+
+deploy/staging/*.jar
+deploy/backup/*.jar
