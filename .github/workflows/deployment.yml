@@ -1,0 +1,100 @@
+name: Deployment Pipeline
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  build:
+
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Descargar codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Construir aplicacion
+        run: mvn clean package
+
+
+  acceptance:
+
+    name: Acceptance Tests
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+
+      - name: Descargar codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Construir aplicacion
+        run: mvn clean package
+
+      - name: Ejecutar Acceptance Test
+        run: |
+          RESULTADO=$(java -jar target/auto-examen-1.0-SNAPSHOT.jar health)
+
+          if [ "$RESULTADO" != "OK" ]; then
+            echo "Acceptance Test fallido"
+            exit 1
+          fi
+
+          echo "Acceptance Test exitoso"
+
+
+  deploy:
+
+    name: Deploy Staging
+    runs-on: ubuntu-latest
+    needs: acceptance
+
+    steps:
+
+      - name: Descargar codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Construir aplicacion
+        run: mvn clean package -DskipTests
+
+      - name: Dar permisos
+        run: chmod +x scripts/*.sh
+
+      - name: Desplegar
+        run: ./scripts/deploy.sh
+
+      - name: Health Check
+        run: |
+          RESULTADO=$(java -jar deploy/staging/app.jar health)
+
+          if [ "$RESULTADO" != "OK" ]; then
+
+            echo "Deployment fallido"
+
+            ./scripts/rollback.sh
+
+            exit 1
+          fi
+
+          echo "Deployment exitoso"
