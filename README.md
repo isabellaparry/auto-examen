@@ -1,6 +1,8 @@
-# Automatización de Pruebas - Examen Final
+# Automatización de Pruebas - Examen Final - Isabella Parry
 
-Proyecto desarrollado para aplicar conceptos de control de versiones,
+## Descripción
+
+Proyecto desarrollado para aplicar control de versiones,
 automatización de pruebas, integración continua y despliegue automatizado.
 
 ## Tecnologías
@@ -13,3 +15,21 @@ automatización de pruebas, integración continua y despliegue automatizado.
 - GitHub
 - GitHub Actions
 - Visual Studio Code
+
+## Estrategia de ramas
+
+Se utilizó Trunk-Based simplificado.
+
+La rama `main` mantiene el código estable y los cambios
+se desarrollan mediante ramas de corta duración.
+
+El pipeline ejecuta:
+
+1. Build.
+2. Unit Tests.
+3. Integration Tests.
+
+Para ejecutar todas las pruebas localmente:
+
+```bash
+mvn clean verify
