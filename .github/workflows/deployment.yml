@@ -48,7 +48,7 @@ jobs:
 
       - name: Ejecutar Acceptance Test
         run: |
-          RESULTADO=$(java -jar target/automatizacion-examen-1.0-SNAPSHOT.jar health)
+          RESULTADO=$(java -jar target/auto-examen-1.0-SNAPSHOT.jar health)
 
           if [ "$RESULTADO" != "OK" ]; then
             echo "Acceptance Test fallido"
